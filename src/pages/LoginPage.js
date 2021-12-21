@@ -1,10 +1,11 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { useAuth } from "../utils/auth";
 
 const LoginPage = () => {
 	const authUtils = useAuth();
 	const history = useHistory();
+	const location = useLocation();
 
 	function handleSubmit(event) {
 		event.preventDefault();
