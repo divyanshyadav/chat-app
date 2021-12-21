@@ -1,9 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
-
-const Hello = (props) => {
-	return <h1>Hello World!</h1>;
-};
+import App from "./App";
+import { AuthProvider } from "./utils/auth";
 
 const app = document.getElementById("app");
-ReactDOM.render(<Hello />, app);
+ReactDOM.render(
+	<AuthProvider>
+		<App />
+	</AuthProvider>,
+	app
+);
