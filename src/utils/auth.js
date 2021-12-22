@@ -9,20 +9,23 @@ export function AuthProvider({ children }) {
 }
 
 function useProvideAuth() {
-	const [user, setUser] = React.useState({
-		id: "123",
-		username: "test",
+	const [user, setUser] = React.useState(() => {
+		const user = sessionStorage.getItem("user");
+		return user ? JSON.parse(user) : {};
 	});
 
 	function login(username) {
-		setUser({
+		const user = {
 			id: Math.random().toString(),
 			username,
-		});
+		};
+		setUser(user);
+		sessionStorage.setItem("user", JSON.stringify(user));
 	}
 
 	function logout() {
 		setUser({});
+		sessionStorage.removeItem("user");
 	}
 
 	function isAuthenticated() {

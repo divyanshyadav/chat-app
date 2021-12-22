@@ -42,6 +42,7 @@ export default function Chat({ userId, messages, onSendMessage }) {
 					ref={messageInput}
 					type="text"
 					name="message"
+					autoComplete="off"
 				/>
 				<button type="submit">Send</button>
 			</form>

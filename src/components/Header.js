@@ -7,8 +7,9 @@ export default function Header({ user, onClickLogout }) {
 				height: "50px",
 				display: "flex",
 				alignItems: "center",
-				background: "lightgray",
+				background: "rgb(60 1 54)",
 				justifyContent: "space-between",
+				color: "white",
 			}}
 		>
 			<div>Welcome, {user.username}</div>

@@ -1,24 +1,8 @@
 import io from "socket.io-client";
-
-const URL = "http://localhost:3000";
-
-const socket = io(URL, {
+const { API_URL } = process.env;
+const socket = io(API_URL, {
 	autoConnect: false,
 });
-
-// socket.emit("online", loggedInUser);
-
-// socket.on("online", (user) => {
-// 	if (loggedInUser.id === user.id) return;
-// 	console.log("online", user);
-// 	setUsers((users) => [...users, user]);
-// });
-
-// socket.on("offline", (user) => {
-// 	if (loggedInUser.id === user.id) return;
-// 	console.log("offline", user);
-// 	setUsers((users) => users.filter((u) => u.id !== user.id));
-// });
 
 socket.onAny((event, ...args) => {
 	console.log(event, ...args);

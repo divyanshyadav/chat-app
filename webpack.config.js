@@ -1,5 +1,7 @@
+const webpack = require("webpack");
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { localWifiIp } = require("./build-utils/ip");
 
 module.exports = {
 	mode: "development",
@@ -7,11 +9,17 @@ module.exports = {
 	devtool: "inline-source-map",
 	devServer: {
 		static: "./dist",
+		host: localWifiIp,
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
 			title: "Chat App",
 			template: "./src/index.html",
+		}),
+		new webpack.DefinePlugin({
+			"process.env": JSON.stringify({
+				API_URL: `http://${localWifiIp}:3000`,
+			}),
 		}),
 	],
 	module: {
