@@ -3,13 +3,14 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { localWifiIp } = require("./build-utils/ip");
 
+console.log("Local wifi ip:", localWifiIp);
+
 module.exports = {
 	mode: "development",
 	entry: "./src/index.js",
 	devtool: "inline-source-map",
 	devServer: {
 		static: "./dist",
-		host: localWifiIp,
 	},
 	plugins: [
 		new HtmlWebpackPlugin({

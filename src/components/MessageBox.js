@@ -18,13 +18,13 @@ export default function MessagesBox({ userId, messages }) {
 		>
 			{messages.map((message) => (
 				<div
+					key={message.id}
 					style={{
 						display: "flex",
 						justifyContent: message.from === userId ? "flex-end" : "flex-start",
 					}}
 				>
 					<div
-						key={message.id}
 						style={{
 							textAlign: message.from === userId ? "right" : "left",
 							backgroundColor:
