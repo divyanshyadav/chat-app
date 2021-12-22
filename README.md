@@ -2,8 +2,10 @@
 
 ## Development
 
+```sh
 npm install
 npm start
+```
 
 ## Backend Setup
 
