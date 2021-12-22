@@ -9,7 +9,10 @@ export function AuthProvider({ children }) {
 }
 
 function useProvideAuth() {
-	const [user, setUser] = React.useState({});
+	const [user, setUser] = React.useState({
+		id: "123",
+		username: "test",
+	});
 
 	function login(username) {
 		setUser({
