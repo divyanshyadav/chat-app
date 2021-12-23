@@ -25,11 +25,7 @@ export default function Dashboard() {
 		socket.auth = user;
 		socket.connect();
 		socket.on("users", (users) =>
-			setUsers(
-				users
-					.filter((u) => u.id !== user.id)
-					.map((u) => ({ ...u, status: "online" }))
-			)
+			setUsers(users.filter((u) => u.id !== user.id))
 		);
 
 		socket.on("conversations", (conversations) => {
@@ -47,7 +43,7 @@ export default function Dashboard() {
 					});
 				}
 
-				return [...users, { ...newUser, status: "online" }];
+				return [...users, newUser];
 			});
 		});
 
