@@ -1,9 +1,10 @@
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "../utils/auth";
 import socket from "../utils/socket";
 import Header from "../components/Header";
 import SideBar from "../components/Sidebar";
 import Chat from "../components/Chat";
+import { beep } from "../utils/sound";
 
 export default function Dashboard() {
 	const { user, logout } = useAuth();
@@ -58,6 +59,10 @@ export default function Dashboard() {
 						: u
 				);
 			});
+
+			if (document.visibilityState === "hidden") {
+				beep();
+			}
 
 			addMessage(message, message.from);
 		});
