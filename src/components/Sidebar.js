@@ -26,7 +26,24 @@ export default function SideBar({ users, onSelectUser, selectedUserId }) {
 					key={user.id}
 					onClick={() => handleSelectUser(user.id)}
 				>
-					<div>{user.username}</div>
+					<div>
+						{user.username}{" "}
+						{user.newMessages ? (
+							<span
+								style={{
+									display: "inline-block",
+									background: "red",
+									color: "white",
+									borderRadius: "50%",
+									height: "20px",
+									width: "20px",
+									textAlign: "center",
+								}}
+							>
+								{user.newMessages}
+							</span>
+						) : null}
+					</div>
 					<div
 						style={{
 							fontSize: "12px",

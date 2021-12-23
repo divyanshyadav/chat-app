@@ -51,6 +51,14 @@ export default function Dashboard() {
 		});
 
 		socket.on("private message", (message) => {
+			setUsers((users) => {
+				return users.map((u) =>
+					u.id === message.from && message.from !== selectedUserId
+						? { ...u, newMessages: (u.newMessages || 0) + 1 }
+						: u
+				);
+			});
+
 			addMessage(message, message.from);
 		});
 
@@ -65,9 +73,10 @@ export default function Dashboard() {
 		});
 
 		return () => {
+			socket.removeAllListeners();
 			socket.disconnect();
 		};
-	}, [user]);
+	}, [user, selectedUserId]);
 
 	return (
 		<div
@@ -85,7 +94,12 @@ export default function Dashboard() {
 				<SideBar
 					users={users}
 					selectedUserId={selectedUserId}
-					onSelectUser={(userId) => setSelectedUserId(userId)}
+					onSelectUser={(userId) => {
+						setSelectedUserId(userId);
+						setUsers((users) =>
+							users.map((u) => (u.id === userId ? { ...u, newMessages: 0 } : u))
+						);
+					}}
 				/>
 				{selectedUserId && (
 					<Chat
