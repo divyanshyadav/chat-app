@@ -24,7 +24,11 @@ export default function Dashboard() {
 		socket.auth = user;
 		socket.connect();
 		socket.on("users", (users) =>
-			setUsers(users.filter((u) => u.id !== user.id))
+			setUsers(
+				users
+					.filter((u) => u.id !== user.id)
+					.map((u) => ({ ...u, status: "online" }))
+			)
 		);
 
 		socket.on("conversations", (conversations) => {
@@ -33,15 +37,16 @@ export default function Dashboard() {
 
 		socket.on("user connected", (newUser) => {
 			setUsers((users) => {
-				if (user.id === newUser.id) {
-					return users;
+				if (user.id === newUser.id || users.find((u) => u.id === newUser.id)) {
+					return users.map((u) => {
+						if (u.id === newUser.id) {
+							return { ...u, status: "online" };
+						}
+						return u;
+					});
 				}
 
-				if (users.find((u) => u.id === newUser.id)) {
-					return users;
-				}
-
-				return [...users, newUser];
+				return [...users, { ...newUser, status: "online" }];
 			});
 		});
 
@@ -54,7 +59,9 @@ export default function Dashboard() {
 		});
 
 		socket.on("user disconnected", (user) => {
-			setUsers((users) => users.filter((u) => u.id !== user.id));
+			setUsers((users) =>
+				users.map((u) => (u.id === user.id ? { ...u, status: "offline" } : u))
+			);
 		});
 
 		return () => {

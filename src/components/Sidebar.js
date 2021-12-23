@@ -32,7 +32,7 @@ export default function SideBar({ users, onSelectUser, selectedUserId }) {
 							fontSize: "12px",
 						}}
 					>
-						online
+						{user.status}
 					</div>
 				</div>
 			))}
