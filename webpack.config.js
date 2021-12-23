@@ -1,12 +1,12 @@
 const webpack = require("webpack");
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { localWifiIp } = require("./build-utils/ip");
 
-console.log("Local wifi ip:", localWifiIp);
+const mode = process.env.NODE_ENV || "development";
+const isDev = mode === "development";
 
 module.exports = {
-	mode: "development",
+	mode,
 	entry: "./src/index.js",
 	devtool: "inline-source-map",
 	devServer: {
@@ -18,9 +18,9 @@ module.exports = {
 			template: "./src/index.html",
 		}),
 		new webpack.DefinePlugin({
-			"process.env": JSON.stringify({
-				API_URL: `http://${localWifiIp}:3000`,
-			}),
+			"process.env": JSON.stringify(
+				isDev ? require("./env/dev") : require("./env/prod")
+			),
 		}),
 	],
 	module: {
