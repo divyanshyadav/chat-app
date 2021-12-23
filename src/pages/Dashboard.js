@@ -54,7 +54,6 @@ export default function Dashboard() {
 		});
 
 		socket.on("user disconnected", (user) => {
-			console.log("user disconnected", user);
 			setUsers((users) => users.filter((u) => u.id !== user.id));
 		});
 
