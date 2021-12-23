@@ -58,7 +58,6 @@ export default function Dashboard() {
 		});
 
 		return () => {
-			socket.emit("user disconnected", user);
 			socket.disconnect();
 		};
 	}, [user]);
