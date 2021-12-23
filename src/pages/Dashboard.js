@@ -26,12 +26,40 @@ export default function Dashboard() {
 		socket.on("users", (users) =>
 			setUsers(users.filter((u) => u.id !== user.id))
 		);
-		socket.on("user connected", (user) => setUsers((users) => [...users, user]));
+
+		socket.on("conversations", (conversations) => {
+			setConversation(conversations);
+		});
+
+		socket.on("user connected", (newUser) => {
+			setUsers((users) => {
+				if (user.id === newUser.id) {
+					return users;
+				}
+
+				if (users.find((u) => u.id === newUser.id)) {
+					return users;
+				}
+
+				return [...users, newUser];
+			});
+		});
+
 		socket.on("private message", (message) => {
 			addMessage(message, message.from);
 		});
 
+		socket.on("same private message", (message) => {
+			addMessage(message, message.to);
+		});
+
+		socket.on("user disconnected", (user) => {
+			console.log("user disconnected", user);
+			setUsers((users) => users.filter((u) => u.id !== user.id));
+		});
+
 		return () => {
+			socket.emit("user disconnected", user);
 			socket.disconnect();
 		};
 	}, [user]);
@@ -68,8 +96,10 @@ export default function Dashboard() {
 								fromName: user.username,
 							};
 
-							addMessage(message, selectedUserId);
-							socket.emit("private message", message);
+							// addMessage(message, selectedUserId);
+							socket.emit("private message", message, () => {
+								addMessage(message, message.to);
+							});
 						}}
 					/>
 				)}

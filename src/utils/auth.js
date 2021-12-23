@@ -10,7 +10,7 @@ export function AuthProvider({ children }) {
 
 function useProvideAuth() {
 	const [user, setUser] = React.useState(() => {
-		const user = sessionStorage.getItem("user");
+		const user = localStorage.getItem("user");
 		return user ? JSON.parse(user) : {};
 	});
 
@@ -20,12 +20,12 @@ function useProvideAuth() {
 			username,
 		};
 		setUser(user);
-		sessionStorage.setItem("user", JSON.stringify(user));
+		localStorage.setItem("user", JSON.stringify(user));
 	}
 
 	function logout() {
 		setUser({});
-		sessionStorage.removeItem("user");
+		localStorage.removeItem("user");
 	}
 
 	function isAuthenticated() {
