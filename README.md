@@ -2,6 +2,10 @@
 
 https://chat-app-for-dummies.herokuapp.com/
 
+## Architecture
+
+![Architecture](architecture.png)
+
 ## Development
 
 ```sh
