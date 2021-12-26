@@ -49,8 +49,7 @@ const LoginPage = () => {
 					<input type="submit" value="Join" />
 				</form> */}
 				<GoogleLogin
-					// clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
-					clientId="585465649224-854158sjuc6d3ujpaei0c5vdb51odpbr.apps.googleusercontent.com"
+					clientId={process.env.OAUTH_GOOGLE_CLIENT_ID}
 					buttonText="Log in with Google"
 					onSuccess={(response) => {
 						console.log("google login succeed", response);

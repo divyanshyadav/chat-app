@@ -17,7 +17,7 @@ export default function Header({ user, onClickLogout }) {
 			<div>Welcome, {user.username}</div>
 			<div>
 				<GoogleLogout
-					clientId="585465649224-854158sjuc6d3ujpaei0c5vdb51odpbr.apps.googleusercontent.com"
+					clientId={process.env.OAUTH_GOOGLE_CLIENT_ID}
 					buttonText="Logout"
 					onLogoutSuccess={(res) => {
 						console.log(res);
