@@ -64,6 +64,14 @@ export default function Dashboard() {
 		});
 
 		socket.on("private message", (message) => {
+			setUsers((users) => {
+				return users.map((u) =>
+					u.id === message.from && message.from !== selectedUserId
+						? { ...u, newMessages: (u.newMessages || 0) + 1 }
+						: u
+				);
+			});
+
 			if (document.visibilityState === "hidden") {
 				beep();
 			}
@@ -78,7 +86,6 @@ export default function Dashboard() {
 		});
 
 		socket.on("private message reached to user", (message) => {
-			console.log("hello");
 			updateMessage(message, message.to);
 		});
 
