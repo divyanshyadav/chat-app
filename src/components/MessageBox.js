@@ -4,9 +4,9 @@ import UserImage from "./UserImage";
 export default function MessagesBox({ userId, messages }) {
 	const container = React.useRef(null);
 
-	// useLayoutEffect(() => {
-	// container.current.scrollTop = container.current.scrollHeight;
-	// }, [messages]);
+	useLayoutEffect(() => {
+		container.current.scrollTop = container.current.scrollHeight;
+	}, [messages]);
 
 	return (
 		<div

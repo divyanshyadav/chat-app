@@ -12,9 +12,9 @@ export default function Chat({ userId, messages, onSendMessage }) {
 		event.target.message.value = "";
 	}
 
-	useLayoutEffect(() => {
-		messageInput.current.focus();
-	});
+	// useLayoutEffect(() => {
+	// 	messageInput.current.focus();
+	// });
 
 	return (
 		<div
