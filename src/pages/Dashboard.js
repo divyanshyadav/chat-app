@@ -111,9 +111,11 @@ export default function Dashboard() {
 								id: Math.random().toString(),
 								text,
 								to: selectedUserId,
-								from: user.id,
 								toName: users.find((u) => u.id === selectedUserId).username,
+								toImageUrl: users.find((u) => u.id === selectedUserId).imageUrl,
+								from: user.id,
 								fromName: user.username,
+								fromImageUrl: user.imageUrl,
 							};
 
 							// addMessage(message, selectedUserId);

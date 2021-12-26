@@ -14,10 +14,11 @@ function useProvideAuth() {
 		return user ? JSON.parse(user) : {};
 	});
 
-	function login(username) {
+	function login(userDetails) {
 		const user = {
-			id: Math.random().toString(),
-			username,
+			...userDetails,
+			id: userDetails.googleId,
+			username: userDetails.name,
 		};
 		setUser(user);
 		localStorage.setItem("user", JSON.stringify(user));

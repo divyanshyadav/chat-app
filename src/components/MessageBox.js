@@ -1,4 +1,5 @@
 import React, { useLayoutEffect } from "react";
+import UserImage from "./UserImage";
 
 export default function MessagesBox({ userId, messages }) {
 	const container = React.useRef(null);
@@ -32,18 +33,22 @@ export default function MessagesBox({ userId, messages }) {
 							padding: "5px",
 							borderRadius: "5px",
 							margin: "5px",
-							display: "inline-block",
+							display: "flex",
+							flexDirection: "row",
 						}}
 					>
-						<strong>{message.fromName}</strong>
-						<br />
-						<div
-							style={{
-								fontSize: "18px",
-								marginTop: "5px",
-							}}
-						>
-							{message.text}
+						<UserImage url={message.fromImageUrl} />
+						<div>
+							<strong>{message.fromName}</strong>
+							<br />
+							<div
+								style={{
+									fontSize: "18px",
+									marginTop: "5px",
+								}}
+							>
+								{message.text}
+							</div>
 						</div>
 					</div>
 				</div>
