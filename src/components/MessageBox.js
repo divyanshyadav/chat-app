@@ -37,9 +37,9 @@ export default function MessagesBox({ userId, messages }) {
 							flexDirection: "row",
 						}}
 					>
-						<UserImage url={message.fromImageUrl} />
+						<UserImage url={message.fromUser.imageUrl} />
 						<div>
-							<strong>{message.fromName}</strong>
+							<strong>{message.fromUser.name}</strong>
 							<br />
 							<div
 								style={{
@@ -49,10 +49,26 @@ export default function MessagesBox({ userId, messages }) {
 							>
 								{message.text}
 							</div>
+							<MessageStatus
+								reachedToServer={message.reachedToServer}
+								reachedToUser={message.reachedToUser}
+							/>
 						</div>
 					</div>
 				</div>
 			))}
 		</div>
 	);
+}
+
+function MessageStatus({ reachedToServer, reachedToUser }) {
+	if (reachedToUser) {
+		return <div>✓✓</div>;
+	}
+
+	if (reachedToServer) {
+		return <div>✓</div>;
+	}
+
+	return "⏰";
 }

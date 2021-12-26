@@ -21,6 +21,22 @@ export default function Dashboard() {
 		});
 	}
 
+	function updateMessage(message, userId) {
+		setConversation((conversation) => {
+			return {
+				...conversation,
+				[userId]: [
+					...(conversation[userId].map((m) => {
+						if (m.id === message.id) {
+							return { ...m, ...message };
+						}
+						return m;
+					}) || []),
+				],
+			};
+		});
+	}
+
 	useEffect(() => {
 		socket.auth = user;
 		socket.connect();
@@ -48,23 +64,22 @@ export default function Dashboard() {
 		});
 
 		socket.on("private message", (message) => {
-			setUsers((users) => {
-				return users.map((u) =>
-					u.id === message.from && message.from !== selectedUserId
-						? { ...u, newMessages: (u.newMessages || 0) + 1 }
-						: u
-				);
-			});
-
 			if (document.visibilityState === "hidden") {
 				beep();
 			}
 
+			message.reachedToUser = true;
 			addMessage(message, message.from);
+			socket.emit("private message reached to user", message);
 		});
 
 		socket.on("same private message", (message) => {
 			addMessage(message, message.to);
+		});
+
+		socket.on("private message reached to user", (message) => {
+			console.log("hello");
+			updateMessage(message, message.to);
 		});
 
 		socket.on("user disconnected", (user) => {
@@ -77,7 +92,7 @@ export default function Dashboard() {
 			socket.removeAllListeners();
 			socket.disconnect();
 		};
-	}, [user, selectedUserId]);
+	}, [user]);
 
 	return (
 		<div
@@ -111,16 +126,16 @@ export default function Dashboard() {
 								id: Math.random().toString(),
 								text,
 								to: selectedUserId,
-								toName: users.find((u) => u.id === selectedUserId).username,
-								toImageUrl: users.find((u) => u.id === selectedUserId).imageUrl,
+								toUser: users.find((u) => u.id === selectedUserId),
 								from: user.id,
-								fromName: user.username,
-								fromImageUrl: user.imageUrl,
+								fromUser: user,
+								reachedToServer: false,
+								reachedToUser: false,
 							};
 
-							// addMessage(message, selectedUserId);
-							socket.emit("private message", message, () => {
-								addMessage(message, message.to);
+							addMessage(message, message.to);
+							socket.emit("private message", message, (msg) => {
+								updateMessage(msg, msg.to);
 							});
 						}}
 					/>
