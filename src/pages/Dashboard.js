@@ -70,28 +70,6 @@ export default function Dashboard() {
 			});
 		});
 
-		socket.on("private message", (message) => {
-			if (message.from !== selectedUserId) {
-				setUsers((users) => {
-					return users.map((u) =>
-						u.id === message.from && message.from !== selectedUserId
-							? { ...u, newMessages: (u.newMessages || 0) + 1 }
-							: u
-					);
-				});
-			} else {
-				message.seenByUser = true;
-			}
-
-			if (document.visibilityState === "hidden") {
-				beep();
-			}
-
-			message.reachedToUser = true;
-			addMessage(message, message.from);
-			socket.emit("private message reached to user", message);
-		});
-
 		socket.on("update private message", (message) => {
 			addMessage(message, message.to);
 		});
@@ -118,7 +96,15 @@ export default function Dashboard() {
 			updateMessage(message, message.from);
 		});
 
+		return () => {
+			socket.removeAllListeners();
+			socket.disconnect();
+		};
+	}, [user, loading]);
+
+	useEffect(() => {
 		const messages = conversation[selectedUserId] || [];
+
 		messages
 			.filter((m) => m.from === selectedUserId)
 			.forEach((m) => {
@@ -126,12 +112,35 @@ export default function Dashboard() {
 					socket.emit("message seen by user", m);
 				}
 			});
+	}, [conversation, selectedUserId]);
+
+	useEffect(() => {
+		socket.on("private message", (message) => {
+			if (message.from !== selectedUserId) {
+				setUsers((users) => {
+					return users.map((u) =>
+						u.id === message.from && message.from !== selectedUserId
+							? { ...u, newMessages: (u.newMessages || 0) + 1 }
+							: u
+					);
+				});
+			} else {
+				message.seenByUser = true;
+			}
+
+			if (document.visibilityState === "hidden") {
+				beep();
+			}
+
+			message.reachedToUser = true;
+			addMessage(message, message.from);
+			socket.emit("private message reached to user", message);
+		});
 
 		return () => {
-			socket.removeAllListeners();
-			// socket.disconnect();
+			socket.removeAllListeners("private message");
 		};
-	}, [user, loading, selectedUserId]);
+	}, [selectedUserId]);
 
 	return (
 		<div
