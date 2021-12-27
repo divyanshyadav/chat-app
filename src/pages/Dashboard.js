@@ -5,12 +5,14 @@ import Header from "../components/Header";
 import SideBar from "../components/Sidebar";
 import Chat from "../components/Chat";
 import { beep } from "../utils/sound";
+import { get } from "../utils/api-client";
 
 export default function Dashboard() {
 	const { user, logout } = useAuth();
 	const [users, setUsers] = React.useState([]);
 	const [selectedUserId, setSelectedUserId] = React.useState(null);
 	const [conversation, setConversation] = React.useState({});
+	const [loading, setLoading] = React.useState(true);
 
 	function addMessage(message, userId) {
 		setConversation((conversation) => {
@@ -37,17 +39,22 @@ export default function Dashboard() {
 		});
 	}
 
+	useEffect(async () => {
+		const users = await get(process.env.API_URL + "/users");
+		setUsers(users.filter((u) => u.id !== user.id));
+
+		const conversations = await get(
+			process.env.API_URL + "/users/conversations/" + user.id
+		);
+		setConversation(conversations);
+		setLoading(false);
+	}, []);
+
 	useEffect(() => {
+		if (loading) return;
+
 		socket.auth = user;
 		socket.connect();
-		socket.on("users", (users) =>
-			setUsers(users.filter((u) => u.id !== user.id))
-		);
-
-		socket.on("conversations", (conversations) => {
-			setConversation(conversations);
-		});
-
 		socket.on("user connected", (newUser) => {
 			setUsers((users) => {
 				if (user.id === newUser.id || users.find((u) => u.id === newUser.id)) {
@@ -81,12 +88,16 @@ export default function Dashboard() {
 			socket.emit("private message reached to user", message);
 		});
 
-		socket.on("same private message", (message) => {
+		socket.on("update private message", (message) => {
 			addMessage(message, message.to);
 		});
 
 		socket.on("private message reached to user", (message) => {
 			updateMessage(message, message.to);
+		});
+
+		socket.on("update private message reached to user", (message) => {
+			updateMessage(message, message.from);
 		});
 
 		socket.on("user disconnected", (user) => {
@@ -99,7 +110,7 @@ export default function Dashboard() {
 			socket.removeAllListeners();
 			socket.disconnect();
 		};
-	}, [user]);
+	}, [user, loading]);
 
 	return (
 		<div
