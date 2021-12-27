@@ -56,6 +56,7 @@ export default function Dashboard() {
 		socket.auth = user;
 		socket.connect();
 		socket.on("user connected", (newUser) => {
+			if (newUser === null) return;
 			setUsers((users) => {
 				if (user.id === newUser.id || users.find((u) => u.id === newUser.id)) {
 					return users.map((u) => {
@@ -68,6 +69,28 @@ export default function Dashboard() {
 
 				return [...users, newUser];
 			});
+		});
+
+		socket.on("private message", (message) => {
+			if (message.from !== selectedUserId) {
+				setUsers((users) => {
+					return users.map((u) =>
+						u.id === message.from && message.from !== selectedUserId
+							? { ...u, newMessages: (u.newMessages || 0) + 1 }
+							: u
+					);
+				});
+			} else {
+				// message.seenByUser = true;
+			}
+
+			if (document.visibilityState === "hidden") {
+				beep();
+			}
+
+			message.reachedToUser = true;
+			addMessage(message, message.from);
+			socket.emit("private message reached to user", message);
 		});
 
 		socket.on("update private message", (message) => {
@@ -100,47 +123,47 @@ export default function Dashboard() {
 			socket.removeAllListeners();
 			socket.disconnect();
 		};
-	}, [user, loading]);
+	}, [user, loading, selectedUserId]);
 
-	useEffect(() => {
-		const messages = conversation[selectedUserId] || [];
+	// useEffect(() => {
+	// 	const messages = conversation[selectedUserId] || [];
 
-		messages
-			.filter((m) => m.from === selectedUserId)
-			.forEach((m) => {
-				if (m.seenByUser !== undefined && m.seenByUser === false) {
-					socket.emit("message seen by user", m);
-				}
-			});
-	}, [conversation, selectedUserId]);
+	// 	messages
+	// 		.filter((m) => m.from === selectedUserId)
+	// 		.forEach((m) => {
+	// 			if (m.seenByUser !== undefined && m.seenByUser === false) {
+	// 				socket.emit("message seen by user", m);
+	// 			}
+	// 		});
+	// }, [conversation, selectedUserId]);
 
-	useEffect(() => {
-		socket.on("private message", (message) => {
-			if (message.from !== selectedUserId) {
-				setUsers((users) => {
-					return users.map((u) =>
-						u.id === message.from && message.from !== selectedUserId
-							? { ...u, newMessages: (u.newMessages || 0) + 1 }
-							: u
-					);
-				});
-			} else {
-				message.seenByUser = true;
-			}
+	// useEffect(() => {
+	// 	socket.on("private message", (message) => {
+	// 		if (message.from !== selectedUserId) {
+	// 			setUsers((users) => {
+	// 				return users.map((u) =>
+	// 					u.id === message.from && message.from !== selectedUserId
+	// 						? { ...u, newMessages: (u.newMessages || 0) + 1 }
+	// 						: u
+	// 				);
+	// 			});
+	// 		} else {
+	// 			message.seenByUser = true;
+	// 		}
 
-			if (document.visibilityState === "hidden") {
-				beep();
-			}
+	// 		if (document.visibilityState === "hidden") {
+	// 			beep();
+	// 		}
 
-			message.reachedToUser = true;
-			addMessage(message, message.from);
-			socket.emit("private message reached to user", message);
-		});
+	// 		message.reachedToUser = true;
+	// 		addMessage(message, message.from);
+	// 		socket.emit("private message reached to user", message);
+	// 	});
 
-		return () => {
-			socket.removeAllListeners("private message");
-		};
-	}, [selectedUserId]);
+	// 	return () => {
+	// 		socket.removeAllListeners("private message");
+	// 	};
+	// }, [selectedUserId]);
 
 	return (
 		<div
