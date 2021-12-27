@@ -79,6 +79,8 @@ export default function Dashboard() {
 							: u
 					);
 				});
+			} else {
+				message.seenByUser = true;
 			}
 
 			if (document.visibilityState === "hidden") {
@@ -108,9 +110,26 @@ export default function Dashboard() {
 			);
 		});
 
+		socket.on("message seen by user", (message) => {
+			updateMessage(message, message.to);
+		});
+
+		socket.on("update message seen by user", (message) => {
+			updateMessage(message, message.from);
+		});
+
+		const messages = conversation[selectedUserId] || [];
+		messages
+			.filter((m) => m.from === selectedUserId)
+			.forEach((m) => {
+				if (m.seenByUser !== undefined && m.seenByUser === false) {
+					socket.emit("message seen by user", m);
+				}
+			});
+
 		return () => {
 			socket.removeAllListeners();
-			socket.disconnect();
+			// socket.disconnect();
 		};
 	}, [user, loading, selectedUserId]);
 
@@ -151,7 +170,7 @@ export default function Dashboard() {
 								fromUser: user,
 								reachedToServer: false,
 								reachedToUser: false,
-								readByUser: false,
+								seenByUser: false,
 							};
 
 							addMessage(message, message.to);

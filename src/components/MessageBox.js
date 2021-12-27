@@ -52,6 +52,7 @@ export default function MessagesBox({ userId, messages }) {
 							<MessageStatus
 								reachedToServer={message.reachedToServer}
 								reachedToUser={message.reachedToUser}
+								seenByUser={message.seenByUser}
 							/>
 						</div>
 					</div>
@@ -61,7 +62,11 @@ export default function MessagesBox({ userId, messages }) {
 	);
 }
 
-function MessageStatus({ reachedToServer, reachedToUser }) {
+function MessageStatus({ reachedToServer, reachedToUser, seenByUser }) {
+	if (seenByUser) {
+		return <div>👁</div>;
+	}
+
 	if (reachedToUser) {
 		return <div>✓✓</div>;
 	}
