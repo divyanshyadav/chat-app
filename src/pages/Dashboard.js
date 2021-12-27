@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useAuth } from "../utils/auth";
-import socket from "../utils/socket";
+import useSocket from "../utils/socket";
 import Header from "../components/Header";
 import SideBar from "../components/Sidebar";
 import Chat from "../components/Chat";
@@ -10,6 +10,8 @@ import { get } from "../utils/api-client";
 export default function Dashboard() {
 	const { user, logout } = useAuth();
 	const [users, setUsers] = React.useState([]);
+	const socket = useSocket(user);
+
 	const [selectedUserId, setSelectedUserId] = React.useState(null);
 	const [conversation, setConversation] = React.useState({});
 	const [loading, setLoading] = React.useState(true);
@@ -53,8 +55,8 @@ export default function Dashboard() {
 	useEffect(() => {
 		if (loading) return;
 
-		socket.auth = user;
-		socket.connect();
+		console.log("setting up socket listeners", socket);
+		// socket.auth = user;
 		socket.on("user connected", (newUser) => {
 			if (newUser === null) return;
 			setUsers((users) => {
@@ -121,9 +123,8 @@ export default function Dashboard() {
 
 		return () => {
 			socket.removeAllListeners();
-			socket.disconnect();
 		};
-	}, [user, loading, selectedUserId]);
+	}, [user, loading, selectedUserId, socket]);
 
 	// useEffect(() => {
 	// 	const messages = conversation[selectedUserId] || [];
