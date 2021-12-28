@@ -99,6 +99,10 @@ export default function Dashboard() {
 			addMessage(message, message.to);
 		});
 
+		socket.on("update private message again", (message) => {
+			updateMessage(message, message.to);
+		});
+
 		socket.on("private message reached to user", (message) => {
 			updateMessage(message, message.to);
 		});
