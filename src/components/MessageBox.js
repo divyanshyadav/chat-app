@@ -90,6 +90,8 @@ function Time({ timestamp }) {
 		return strTime;
 	}
 
+	if (!timestamp) return null;
+
 	return (
 		<div
 			style={{
