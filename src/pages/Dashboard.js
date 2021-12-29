@@ -122,12 +122,7 @@ export default function Dashboard() {
 		if (!socket) return;
 
 		function handleConnect(newUser) {
-			// if logged in user connects back
-			if (user.id === newUser.id) {
-				// do nothing
-			}
-			// if the existing using comes online again.
-			else if (users.find((u) => u.id === newUser.id)) {
+			if (users.find((u) => u.id === newUser.id)) {
 				setUsers(
 					users.map((u) => (u.id === newUser.id ? { ...u, status: "online" } : u))
 				);
@@ -250,7 +245,7 @@ export default function Dashboard() {
 				}}
 			>
 				<SideBar
-					users={users}
+					users={users.filter((u) => u.id !== user.id)}
 					selectedUserId={selectedUserId}
 					onSelectUser={(userId) => {
 						setSelectedUserId(userId);
