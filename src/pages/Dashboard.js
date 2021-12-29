@@ -100,22 +100,7 @@ export default function Dashboard() {
 			process.env.API_URL + "/users/conversations/" + user.id
 		);
 
-		setUsers(
-			users
-				.filter((u) => u.id !== user.id)
-				.map((u) => {
-					const messages = conversations[u.id] || [];
-					const unseenMessages = messages.reduce((acc, message) => {
-						if (isMessageNotSeen(message, user)) return 1 + acc;
-						return acc;
-					}, 0);
-
-					return {
-						...u,
-						newMessages: unseenMessages,
-					};
-				})
-		);
+		setUsers(updateNewMessagesCounter(users, conversations, user));
 		setConversation(conversations);
 		setLoading(false);
 		socket.connect();
@@ -158,6 +143,36 @@ export default function Dashboard() {
 			socket.off("user disconnect", handleUserDisconnect);
 		};
 	}, [socket, user, users, setUsers]);
+
+	useEffect(() => {
+		if (!socket) return;
+		function handleUsers(users) {
+			setUsers((oldUsers) => {
+				const map = new Map();
+				oldUsers.forEach((user) => map.set(user.id, user));
+
+				const updatedUsers = [];
+
+				users.forEach((user) => {
+					if (map.has(user.id)) {
+						updatedUsers.push({
+							...map.get(user.id),
+							...user,
+						});
+					} else {
+						updatedUsers.push(user);
+					}
+				});
+
+				return updateNewMessagesCounter(updatedUsers, conversation, user);
+			});
+		}
+
+		socket.on("users", handleUsers);
+		return () => {
+			socket.off("users", handleUsers);
+		};
+	}, [socket, user, conversation, users, setUsers]);
 
 	useEffect(() => {
 		if (!socket) return;
@@ -281,4 +296,21 @@ export default function Dashboard() {
 
 function isMessageNotSeen(message, user) {
 	return message.to === user.id && !message.seenByUser;
+}
+
+function updateNewMessagesCounter(users, conversations, user) {
+	return users
+		.filter((u) => u.id !== user.id)
+		.map((u) => {
+			const messages = conversations[u.id] || [];
+			const unseenMessages = messages.reduce((acc, message) => {
+				if (isMessageNotSeen(message, user)) return 1 + acc;
+				return acc;
+			}, 0);
+
+			return {
+				...u,
+				newMessages: unseenMessages,
+			};
+		});
 }
