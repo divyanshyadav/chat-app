@@ -69,10 +69,11 @@ export default function Dashboard() {
 			if (messages.find((m) => m.id === message.id)) {
 				updateMessage(message);
 			} else {
+				updateMessageCounter(message);
 				addMessage(message);
 			}
 		},
-		[getUserId, addMessage, updateMessage, conversation]
+		[getUserId, addMessage, updateMessage, conversation, updateMessageCounter]
 	);
 
 	const updateMessageCounter = useCallback(
@@ -93,6 +94,7 @@ export default function Dashboard() {
 	);
 
 	useEffect(async () => {
+		if (!socket) return;
 		const users = await get(process.env.API_URL + "/users");
 		const conversations = await get(
 			process.env.API_URL + "/users/conversations/" + user.id
@@ -116,7 +118,8 @@ export default function Dashboard() {
 		);
 		setConversation(conversations);
 		setLoading(false);
-	}, [setConversation, setLoading, setUsers]);
+		socket.connect();
+	}, [socket, setConversation, setLoading, setUsers]);
 
 	useEffect(() => {
 		if (!socket) return;
@@ -147,7 +150,7 @@ export default function Dashboard() {
 	}, [socket, user, users, setUsers]);
 
 	useEffect(() => {
-		if (loading) return;
+		if (!socket) return;
 
 		function handleMessage(message) {
 			if (document.visibilityState === "hidden") {
@@ -158,9 +161,8 @@ export default function Dashboard() {
 				message.seenByUser = true;
 			}
 
-			updateMessageCounter(message);
 			message.reachedToUser = true;
-			addMessage(message);
+			updateOrAddMessage(message);
 			socket.emit("message ack", message);
 		}
 
@@ -181,7 +183,7 @@ export default function Dashboard() {
 		selectedUserId,
 		addMessage,
 		updateMessage,
-		updateMessageCounter,
+		updateOrAddMessage,
 	]);
 
 	useEffect(() => {

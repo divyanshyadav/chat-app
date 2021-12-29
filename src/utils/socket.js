@@ -6,7 +6,9 @@ function useSocket(user) {
 	const [socket, setSocket] = useState(null);
 
 	useEffect(() => {
-		const newSocket = io(API_URL);
+		const newSocket = io(API_URL, {
+			autoConnect: false,
+		});
 
 		newSocket.auth = user;
 		if (process.env.NODE_ENV === "development") {
