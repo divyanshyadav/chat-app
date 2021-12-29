@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useAuth } from "../utils/auth";
 import useSocket from "../utils/socket";
 import Header from "../components/Header";
@@ -6,42 +6,31 @@ import SideBar from "../components/Sidebar";
 import Chat from "../components/Chat";
 import { beep } from "../utils/sound";
 import { get } from "../utils/api-client";
+import { deepMerge } from "../utils/object";
 
 export default function Dashboard() {
 	const { user, logout } = useAuth();
-	const [users, setUsers] = React.useState([]);
 	const socket = useSocket(user);
-
-	const [selectedUserId, setSelectedUserId] = React.useState(null);
-	const [conversation, setConversation] = React.useState({});
-	const [loading, setLoading] = React.useState(true);
-
-	const getUserId = useCallback(
-		(message) => {
-			if (message.from === user.id) {
-				return message.to;
-			}
-
-			return message.from;
-		},
-		[user]
-	);
+	const [users, setUsers] = useState([]);
+	const [selectedUserId, setSelectedUserId] = useState(null);
+	const [conversation, setConversation] = useState({});
+	const [loading, setLoading] = useState(true);
 
 	const addMessage = useCallback(
 		(message) => {
-			const userId = getUserId(message);
+			const userId = getUserId(message, user);
 
 			setConversation((conversation) => ({
 				...conversation,
 				[userId]: [...(conversation[userId] || []), message],
 			}));
 		},
-		[getUserId, setConversation]
+		[user, setConversation]
 	);
 
 	const updateMessage = useCallback(
 		(message) => {
-			const userId = getUserId(message);
+			const userId = getUserId(message, user);
 
 			setConversation((conversation) => {
 				const messages =
@@ -58,12 +47,12 @@ export default function Dashboard() {
 				};
 			});
 		},
-		[getUserId, setConversation]
+		[user, setConversation]
 	);
 
 	const updateOrAddMessage = useCallback(
 		(message) => {
-			const userId = getUserId(message);
+			const userId = getUserId(message, user);
 			const messages = conversation[userId] || [];
 
 			if (messages.find((m) => m.id === message.id)) {
@@ -73,7 +62,7 @@ export default function Dashboard() {
 				addMessage(message);
 			}
 		},
-		[getUserId, addMessage, updateMessage, conversation, updateMessageCounter]
+		[user, conversation, addMessage, updateMessage, updateMessageCounter]
 	);
 
 	const updateMessageCounter = useCallback(
@@ -95,12 +84,10 @@ export default function Dashboard() {
 
 	useEffect(async () => {
 		if (!socket) return;
-		const users = await get(process.env.API_URL + "/users");
 		const conversations = await get(
 			process.env.API_URL + "/users/conversations/" + user.id
 		);
 
-		setUsers(updateNewMessagesCounter(users, conversations, user));
 		setConversation(conversations);
 		setLoading(false);
 		socket.connect();
@@ -148,22 +135,7 @@ export default function Dashboard() {
 		if (!socket) return;
 		function handleUsers(users) {
 			setUsers((oldUsers) => {
-				const map = new Map();
-				oldUsers.forEach((user) => map.set(user.id, user));
-
-				const updatedUsers = [];
-
-				users.forEach((user) => {
-					if (map.has(user.id)) {
-						updatedUsers.push({
-							...map.get(user.id),
-							...user,
-						});
-					} else {
-						updatedUsers.push(user);
-					}
-				});
-
+				const updatedUsers = deepMerge(oldUsers, users);
 				return updateNewMessagesCounter(updatedUsers, conversation, user);
 			});
 		}
@@ -294,23 +266,30 @@ export default function Dashboard() {
 	);
 }
 
+// Util functions
+function getUserId(message, user) {
+	if (message.from === user.id) {
+		return message.to;
+	}
+
+	return message.from;
+}
+
 function isMessageNotSeen(message, user) {
 	return message.to === user.id && !message.seenByUser;
 }
 
 function updateNewMessagesCounter(users, conversations, user) {
-	return users
-		.filter((u) => u.id !== user.id)
-		.map((u) => {
-			const messages = conversations[u.id] || [];
-			const unseenMessages = messages.reduce((acc, message) => {
-				if (isMessageNotSeen(message, user)) return 1 + acc;
-				return acc;
-			}, 0);
+	return users.map((u) => {
+		const messages = conversations[u.id] || [];
+		const unseenMessages = messages.reduce((acc, message) => {
+			if (isMessageNotSeen(message, user)) return 1 + acc;
+			return acc;
+		}, 0);
 
-			return {
-				...u,
-				newMessages: unseenMessages,
-			};
-		});
+		return {
+			...u,
+			newMessages: unseenMessages,
+		};
+	});
 }
