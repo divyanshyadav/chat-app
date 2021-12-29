@@ -241,7 +241,8 @@ export default function Dashboard() {
 		});
 	}
 
-	if (loading) return <div>Please wait...</div>;
+	if (loading) return <div>Please wait..</div>;
+	if (socket && !socket.connect) return <div>Please wait...</div>;
 
 	return (
 		<div
