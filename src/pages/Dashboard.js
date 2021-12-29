@@ -103,15 +103,15 @@ export default function Dashboard() {
 		setUsers(
 			users
 				.filter((u) => u.id !== user.id)
-				.map((user) => {
-					const messages = conversations[user.id] || [];
+				.map((u) => {
+					const messages = conversations[u.id] || [];
 					const unseenMessages = messages.reduce((acc, message) => {
-						if (!message.seenByUser) return 1 + acc;
+						if (isMessageNotSeen(message, user)) return 1 + acc;
 						return acc;
 					}, 0);
 
 					return {
-						...user,
+						...u,
 						newMessages: unseenMessages,
 					};
 				})
@@ -119,33 +119,43 @@ export default function Dashboard() {
 		setConversation(conversations);
 		setLoading(false);
 		socket.connect();
-	}, [socket, setConversation, setLoading, setUsers]);
+	}, [socket, user, setConversation, setLoading, setUsers]);
 
 	useEffect(() => {
 		if (!socket) return;
 
-		function handleConnect(newUser) {
+		function handleConnect() {
+			socket.emit("user connect", user);
+		}
+
+		function handleDisconnect() {
+			socket.emit("user disconnect", user);
+		}
+
+		function handleUserConnect(newUser) {
 			if (users.find((u) => u.id === newUser.id)) {
 				setUsers(
-					users.map((u) => (u.id === newUser.id ? { ...u, status: "online" } : u))
+					users.map((u) => (u.id === newUser.id ? { ...u, ...newUser } : u))
 				);
 			} else {
 				setUsers([...users, newUser]);
 			}
 		}
 
-		function handleDisconnect(user) {
-			setUsers(
-				users.map((u) => (u.id === user.id ? { ...u, status: "offline" } : u))
-			);
+		function handleUserDisconnect(user) {
+			setUsers(users.map((u) => (u.id === user.id ? { ...u, ...user } : u)));
 		}
 
-		socket.on("user connect", handleConnect);
-		socket.on("user disconnect", handleDisconnect);
+		socket.on("connect", handleConnect);
+		socket.on("disconnect", handleDisconnect);
+		socket.on("user connect", handleUserConnect);
+		socket.on("user disconnect", handleUserDisconnect);
 
 		return () => {
-			socket.off("user connect", handleConnect);
-			socket.off("user disconnect", handleDisconnect);
+			socket.off("connect", handleConnect);
+			socket.off("disconnect", handleDisconnect);
+			socket.off("user connect", handleUserConnect);
+			socket.off("user disconnect", handleUserDisconnect);
 		};
 	}, [socket, user, users, setUsers]);
 
@@ -195,7 +205,7 @@ export default function Dashboard() {
 			return {
 				...conversation,
 				[selectedUserId]: messages.map((message) => {
-					if (!message.seenByUser) {
+					if (isMessageNotSeen(message, user)) {
 						message.seenByUser = true;
 
 						socket.emit("message seen", message);
@@ -209,7 +219,7 @@ export default function Dashboard() {
 				}),
 			};
 		});
-	}, [socket, selectedUserId, setConversation]);
+	}, [socket, user, selectedUserId, setConversation]);
 
 	function sendMessage(text) {
 		const message = {
@@ -266,4 +276,8 @@ export default function Dashboard() {
 			</div>
 		</div>
 	);
+}
+
+function isMessageNotSeen(message, user) {
+	return message.to === user.id && !message.seenByUser;
 }
