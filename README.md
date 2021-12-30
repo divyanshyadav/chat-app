@@ -1,6 +1,8 @@
 # Chap App
 
-Demo: https://chat-app-for-dummies.herokuapp.com/
+## Demo
+
+https://chat-app-for-dummies.herokuapp.com/
 
 ## Architecture
 
