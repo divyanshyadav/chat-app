@@ -10,7 +10,7 @@ import { deepMerge } from "../utils/object";
 
 export default function Dashboard() {
 	const { user, logout } = useAuth();
-	const socket = useSocket(user);
+	const socket = useSocket();
 	const [users, setUsers] = useState([]);
 	const [selectedUserId, setSelectedUserId] = useState(null);
 	const [conversation, setConversation] = useState({});
@@ -244,8 +244,9 @@ export default function Dashboard() {
 
 	useEffect(async () => {
 		if (!socket) return;
+		socket.auth = user;
 		socket.connect();
-	}, [socket]);
+	}, [socket, user]);
 
 	if (socket && !socket.connect) return <div>Please wait...</div>;
 

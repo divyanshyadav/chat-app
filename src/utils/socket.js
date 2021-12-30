@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import io from "socket.io-client";
 const { API_URL } = process.env;
 
-function useSocket(user) {
+function useSocket() {
 	const [socket, setSocket] = useState(null);
 
 	useEffect(() => {
@@ -10,7 +10,6 @@ function useSocket(user) {
 			autoConnect: false,
 		});
 
-		newSocket.auth = user;
 		if (process.env.NODE_ENV === "development") {
 			newSocket.onAny((event, ...args) => {
 				console.log(event, ...args);
@@ -29,7 +28,7 @@ function useSocket(user) {
 			newSocket.close();
 			console.log("socket closed");
 		};
-	}, [setSocket, user]);
+	}, [setSocket]);
 
 	return socket;
 }
