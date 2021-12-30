@@ -1,4 +1,5 @@
 import regeneratorRuntime from "regenerator-runtime";
+import "./utils/logger";
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";

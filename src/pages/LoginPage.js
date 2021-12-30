@@ -34,6 +34,7 @@ const LoginPage = () => {
 							body: JSON.stringify(response),
 						});
 
+						console.log(user);
 						authUtils.login(user);
 						redirect();
 					}}
