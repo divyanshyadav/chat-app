@@ -14,7 +14,6 @@ export default function Dashboard() {
 	const [users, setUsers] = useState([]);
 	const [selectedUserId, setSelectedUserId] = useState(null);
 	const [conversation, setConversation] = useState({});
-	const [loading, setLoading] = useState(true);
 
 	const addMessage = useCallback(
 		(message) => {
@@ -82,17 +81,6 @@ export default function Dashboard() {
 		[setUsers, selectedUserId]
 	);
 
-	useEffect(async () => {
-		if (!socket) return;
-		const conversations = await get(
-			process.env.API_URL + "/users/conversations/" + user.id
-		);
-
-		setConversation(conversations);
-		setLoading(false);
-		socket.connect();
-	}, [socket, user, setConversation, setLoading, setUsers]);
-
 	useEffect(() => {
 		if (!socket) return;
 
@@ -149,6 +137,39 @@ export default function Dashboard() {
 	useEffect(() => {
 		if (!socket) return;
 
+		function onConversations(conversations) {
+			for (const [userId, messages] of Object.entries(conversations)) {
+				messages.forEach((message) => {
+					if (message.to === user.id) {
+						if (!message.reachedToUser) {
+							if (message.from === selectedUserId) {
+								message.seenByUser = true;
+							}
+
+							message.reachedToUser = true;
+							socket.emit("message ack", message);
+						}
+					}
+				});
+			}
+
+			setConversation((oldConversations) => {
+				const updatedConversations = deepMerge(oldConversations, conversations);
+				setUsers(updateNewMessagesCounter(users, updatedConversations, user));
+				return updatedConversations;
+			});
+		}
+
+		socket.on("conversations", onConversations);
+
+		return () => {
+			socket.off("conversations", onConversations);
+		};
+	}, [socket, users, user, setConversation, setUsers]);
+
+	useEffect(() => {
+		if (!socket) return;
+
 		function handleMessage(message) {
 			if (document.visibilityState === "hidden") {
 				beep();
@@ -174,14 +195,7 @@ export default function Dashboard() {
 			socket.off("message seen", updateMessage);
 			socket.off("add/update message", updateOrAddMessage);
 		};
-	}, [
-		loading,
-		socket,
-		selectedUserId,
-		addMessage,
-		updateMessage,
-		updateOrAddMessage,
-	]);
+	}, [socket, selectedUserId, addMessage, updateMessage, updateOrAddMessage]);
 
 	useEffect(() => {
 		if (!socket) return;
@@ -228,7 +242,11 @@ export default function Dashboard() {
 		});
 	}
 
-	if (loading) return <div>Please wait..</div>;
+	useEffect(async () => {
+		if (!socket) return;
+		socket.connect();
+	}, [socket]);
+
 	if (socket && !socket.connect) return <div>Please wait...</div>;
 
 	return (
