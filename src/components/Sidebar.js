@@ -20,6 +20,10 @@ export default function SideBar({ users, onSelectUser, selectedUserId }) {
 		onSelectUser(userId);
 	}
 
+	if (!users || users.length === 0) {
+		return "loading....";
+	}
+
 	return (
 		<SideBarWrapper>
 			{users.map((user) => (
