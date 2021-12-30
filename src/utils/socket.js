@@ -12,11 +12,9 @@ function useSocket() {
 			autoConnect: false,
 		});
 
-		if (process.env.NODE_ENV === "development") {
-			newSocket.onAny((event, ...args) => {
-				console.log(event, ...args);
-			});
-		}
+		newSocket.onAny((event, ...args) => {
+			console.log(event, ...args);
+		});
 
 		newSocket.on("connect_error", (err) => {
 			logout();
