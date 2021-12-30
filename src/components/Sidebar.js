@@ -69,14 +69,30 @@ function SideBarItem({ user, onClick, selectedUserId }) {
 						</span>
 					) : null}
 				</div>
-				<div
-					style={{
-						fontSize: "12px",
-					}}
-				>
-					{user.status === "online" ? "🟢" : "🟠"} {user.status}
-				</div>
+				<UserOnlineStatus status={user.status} lastSeen={user.lastSeen} />
 			</div>
+		</div>
+	);
+}
+
+function UserOnlineStatus({ status, lastSeen }) {
+	let text = "";
+
+	if (status === "online") {
+		text = "🟢 Online";
+	} else if (status === "offline" && lastSeen) {
+		text = "Last seen at " + new Date(lastSeen).toLocaleString();
+	} else {
+		text = "🔴 Offline";
+	}
+
+	return (
+		<div
+			style={{
+				fontSize: "10px",
+			}}
+		>
+			{text}
 		</div>
 	);
 }
