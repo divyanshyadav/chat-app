@@ -38,7 +38,7 @@ function SideBarItem({ user, onClick, selectedUserId }) {
 	return (
 		<div
 			style={{
-				background: selectedUserId === user.id ? "darkmagenta" : "",
+				background: selectedUserId === user.id ? "red" : "",
 				padding: "10px",
 				color: "white",
 				cursor: "pointer",
