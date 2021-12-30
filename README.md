@@ -1,7 +1,5 @@
 # Chap App
 
-## Demo
-
 https://chat-app-for-dummies.herokuapp.com/
 
 ## Architecture
@@ -12,9 +10,9 @@ https://chat-app-for-dummies.herokuapp.com/
 
 ```sh
 npm install
-npm start
+npm run start:dev
 ```
 
-## Backend Setup
+## Backend
 
 https://github.com/divyanshyadav/chat-app-api
