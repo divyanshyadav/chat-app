@@ -1,6 +1,7 @@
 import React from "react";
 import UserImage from "./UserImage";
 import styled from "styled-components";
+import Loader from "./Loader";
 
 const SideBarWrapper = styled.div`
 	height: 100%;
@@ -18,10 +19,6 @@ const SideBarWrapper = styled.div`
 export default function SideBar({ users, onSelectUser, selectedUserId }) {
 	function handleSelectUser(userId) {
 		onSelectUser(userId);
-	}
-
-	if (!users || users.length === 0) {
-		return "loading....";
 	}
 
 	return (

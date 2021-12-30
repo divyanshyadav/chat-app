@@ -7,6 +7,7 @@ import Chat from "../components/Chat";
 import { beep } from "../utils/sound";
 import { get } from "../utils/api-client";
 import { deepMerge } from "../utils/object";
+import Loader from "../components/Loader";
 
 export default function Dashboard() {
 	const { user, logout } = useAuth();
@@ -92,13 +93,11 @@ export default function Dashboard() {
 			socket.emit("user disconnect", user);
 		}
 
-		function handleUserConnect(newUser) {
-			if (users.find((u) => u.id === newUser.id)) {
-				setUsers(
-					users.map((u) => (u.id === newUser.id ? { ...u, ...newUser } : u))
-				);
+		function handleUserConnect(user) {
+			if (users.find((u) => u.id === user.id)) {
+				setUsers(users.map((u) => (u.id === user.id ? { ...u, ...user } : u)));
 			} else {
-				setUsers([...users, newUser]);
+				setUsers([...users, user]);
 			}
 		}
 
@@ -129,6 +128,7 @@ export default function Dashboard() {
 		}
 
 		socket.on("users", handleUsers);
+
 		return () => {
 			socket.off("users", handleUsers);
 		};
@@ -248,7 +248,7 @@ export default function Dashboard() {
 		socket.connect();
 	}, [socket, user]);
 
-	if (socket && !socket.connect) return <div>Please wait...</div>;
+	if (!users || users.length === 0) return <Loader />;
 
 	return (
 		<div
