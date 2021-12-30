@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function UserImage({ url }) {
+export default function UserImage({ url, size = 55 }) {
 	if (!url) return null;
 	return (
 		<img
@@ -10,8 +10,8 @@ export default function UserImage({ url }) {
 			}}
 			src={url}
 			alt="profile_img"
-			height={55}
-			width={55}
+			height={size}
+			width={size}
 		/>
 	);
 }

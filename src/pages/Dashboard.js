@@ -256,7 +256,8 @@ export default function Dashboard() {
 				/>
 				{selectedUserId && (
 					<Chat
-						userId={user.id}
+						loggedInUser={user}
+						user={users.find((u) => u.id === selectedUserId)}
 						messages={conversation[selectedUserId] || []}
 						onSendMessage={sendMessage}
 					/>

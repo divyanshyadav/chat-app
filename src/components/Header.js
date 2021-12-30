@@ -8,7 +8,7 @@ export default function Header({ user, onClickLogout }) {
 				height: "50px",
 				display: "flex",
 				alignItems: "center",
-				background: "darkmagenta",
+				background: "#400039",
 				justifyContent: "space-between",
 				color: "white",
 				padding: "0 10px",
@@ -24,7 +24,6 @@ export default function Header({ user, onClickLogout }) {
 						onClickLogout();
 					}}
 				></GoogleLogout>
-				{/* <button onClick={onClickLogout}>Logout</button> */}
 			</div>
 		</div>
 	);

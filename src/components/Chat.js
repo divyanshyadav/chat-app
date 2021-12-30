@@ -1,7 +1,18 @@
-import React, { useLayoutEffect } from "react";
+import React from "react";
 import MessagesBox from "./MessageBox";
+import styled from "styled-components";
 
-export default function Chat({ userId, messages, onSendMessage }) {
+const Header = styled.div`
+	background: gray;
+	color: white;
+	padding: 10px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	height: 50px;
+`;
+
+export default function Chat({ user, messages, onSendMessage, loggedInUser }) {
 	const messageInput = React.useRef(null);
 
 	function handleSubmit(event) {
@@ -22,7 +33,8 @@ export default function Chat({ userId, messages, onSendMessage }) {
 				justifyContent: "space-between",
 			}}
 		>
-			<MessagesBox userId={userId} messages={messages} />
+			{/* <Header>{user.name}</Header> */}
+			<MessagesBox loggedInUser={loggedInUser} messages={messages} />
 			<form
 				style={{
 					display: "flex",

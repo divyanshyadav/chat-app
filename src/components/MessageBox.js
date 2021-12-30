@@ -1,7 +1,7 @@
 import React, { useLayoutEffect } from "react";
 import UserImage from "./UserImage";
 
-export default function MessagesBox({ userId, messages }) {
+export default function MessagesBox({ loggedInUser, messages }) {
 	const container = React.useRef(null);
 
 	useLayoutEffect(() => {
@@ -13,19 +13,19 @@ export default function MessagesBox({ userId, messages }) {
 			ref={container}
 			style={{
 				height: "100%",
-				overflowY: "scroll",
+				overflowY: "auto",
 				padding: "15px",
 			}}
 		>
 			{messages.map((message) => (
-				<Message key={message.id} message={message} userId={userId} />
+				<Message key={message.id} message={message} loggedInUser={loggedInUser} />
 			))}
 		</div>
 	);
 }
 
-function Message({ message, userId }) {
-	const isFromLoggedInUser = message.from === userId;
+function Message({ message, loggedInUser }) {
+	const isFromLoggedInUser = message.from === loggedInUser.id;
 
 	return (
 		<div
@@ -38,7 +38,9 @@ function Message({ message, userId }) {
 				style={{
 					textAlign: isFromLoggedInUser ? "right" : "left",
 					backgroundColor:
-						message.from === userId ? "rgb(233 207 233)" : "rgb(231 140 231)",
+						message.from === loggedInUser.id
+							? "rgb(233 207 233)"
+							: "rgb(231 140 231)",
 					padding: "5px",
 					borderRadius: "5px",
 					margin: "5px",
@@ -46,10 +48,7 @@ function Message({ message, userId }) {
 					flexDirection: "row",
 				}}
 			>
-				<UserImage url={message.fromUser.imageUrl} />
 				<div>
-					<strong>{message.fromUser.name}</strong>
-					<br />
 					<div
 						style={{
 							fontSize: "18px",
@@ -97,7 +96,7 @@ function Time({ timestamp }) {
 			style={{
 				display: "inline-block",
 				marginRight: "5px",
-				fontSize: "12px",
+				fontSize: "9px",
 			}}
 		>
 			{formatAMPM(new Date(timestamp))}
@@ -106,17 +105,25 @@ function Time({ timestamp }) {
 }
 
 function MessageStatus({ reachedToServer, reachedToUser, seenByUser }) {
+	let symbol = "";
+
 	if (seenByUser) {
-		return "👀";
+		symbol = "👀";
+	} else if (reachedToUser) {
+		symbol = "✔️✔️";
+	} else if (reachedToServer) {
+		symbol = "✔️";
+	} else {
+		symbol = "🕑";
 	}
 
-	if (reachedToUser) {
-		return "✔️✔️";
-	}
-
-	if (reachedToServer) {
-		return "✔️";
-	}
-
-	return "🕑";
+	return (
+		<span
+			style={{
+				fontSize: "9px",
+			}}
+		>
+			{symbol}
+		</span>
+	);
 }
