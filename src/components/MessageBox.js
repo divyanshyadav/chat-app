@@ -1,5 +1,12 @@
 import React, { useLayoutEffect } from "react";
-import UserImage from "./UserImage";
+import styled from "styled-components";
+
+const MessageBoxContainer = styled.div`
+	height: 100%;
+	overflow-y: auto;
+	padding: 15px;
+	background: ${(props) => props.theme.dark};
+`;
 
 export default function MessagesBox({ loggedInUser, messages }) {
 	const container = React.useRef(null);
@@ -9,18 +16,11 @@ export default function MessagesBox({ loggedInUser, messages }) {
 	}, [messages]);
 
 	return (
-		<div
-			ref={container}
-			style={{
-				height: "100%",
-				overflowY: "auto",
-				padding: "15px",
-			}}
-		>
+		<MessageBoxContainer ref={container}>
 			{messages.map((message) => (
 				<Message key={message.id} message={message} loggedInUser={loggedInUser} />
 			))}
-		</div>
+		</MessageBoxContainer>
 	);
 }
 

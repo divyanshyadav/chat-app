@@ -1,6 +1,7 @@
 import React from "react";
 import { Oval } from "react-loader-spinner/dist/loader/Oval";
 import styled from "styled-components";
+import theme from "../utils/theme";
 
 const LoaderContainer = styled.div`
 	display: flex;
@@ -14,8 +15,8 @@ export default function Loader() {
 	return (
 		<LoaderContainer>
 			<Oval
-				color="rgb(64, 0, 57)"
-				secondaryColor="rgb(231, 140, 231)"
+				color={theme.secondary}
+				secondaryColor={theme.light}
 				arialLabel="loading-indicator"
 			/>
 		</LoaderContainer>

@@ -5,7 +5,7 @@ import Loader from "./Loader";
 
 const SideBarWrapper = styled.div`
 	height: 100%;
-	background: #400039;
+	background: ${(props) => props.theme.secondary};
 	flex-grow: 3;
 	max-width: 250px;
 	overflow-y: auto;
@@ -35,19 +35,27 @@ export default function SideBar({ users, onSelectUser, selectedUserId }) {
 	);
 }
 
+const SideBarItemContainer = styled.div`
+	background: ${(props) =>
+		props.selected ? props.theme.primary : props.theme.secondary};
+	padding: 10px;
+	color: white;
+	cursor: pointer;
+	font-size: 18px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+
+	&:hover {
+		background: ${(props) =>
+			props.selected ? props.theme.primary : props.theme.light};
+	}
+`;
+
 function SideBarItem({ user, onClick, selectedUserId }) {
 	return (
-		<div
-			style={{
-				background: selectedUserId === user.id ? "red" : "",
-				padding: "10px",
-				color: "white",
-				cursor: "pointer",
-				fontSize: "18px",
-				display: "flex",
-				flexDirection: "row",
-				alignItems: "center",
-			}}
+		<SideBarItemContainer
+			selected={selectedUserId === user.id}
 			onClick={() => onClick(user.id)}
 		>
 			<UserImage url={user.imageUrl} />
@@ -72,7 +80,7 @@ function SideBarItem({ user, onClick, selectedUserId }) {
 				</div>
 				<UserOnlineStatus status={user.status} lastSeen={user.lastSeen} />
 			</div>
-		</div>
+		</SideBarItemContainer>
 	);
 }
 

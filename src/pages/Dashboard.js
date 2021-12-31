@@ -8,6 +8,12 @@ import { beep } from "../utils/sound";
 import { get } from "../utils/api-client";
 import { deepMerge } from "../utils/object";
 import Loader from "../components/Loader";
+import styled from "styled-components";
+
+const DashboardContainer = styled.div`
+	height: 100%;
+	background: ${(props) => props.theme.dark};
+`;
 
 export default function Dashboard() {
 	const { user, logout } = useAuth();
@@ -248,14 +254,15 @@ export default function Dashboard() {
 		socket.connect();
 	}, [socket, user]);
 
-	if (!users || users.length === 0) return <Loader />;
+	if (!users || users.length === 0)
+		return (
+			<DashboardContainer>
+				<Loader />
+			</DashboardContainer>
+		);
 
 	return (
-		<div
-			style={{
-				height: "100%",
-			}}
-		>
+		<DashboardContainer>
 			<Header user={user} onClickLogout={logout} />
 			<div
 				style={{
@@ -282,7 +289,7 @@ export default function Dashboard() {
 					/>
 				)}
 			</div>
-		</div>
+		</DashboardContainer>
 	);
 }
 

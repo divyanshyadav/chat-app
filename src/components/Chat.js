@@ -12,6 +12,13 @@ const Header = styled.div`
 	height: 50px;
 `;
 
+const ChatContainer = styled.div`
+	flex-grow: 8;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+`;
+
 export default function Chat({ user, messages, onSendMessage, loggedInUser }) {
 	const messageInput = React.useRef(null);
 
@@ -25,14 +32,7 @@ export default function Chat({ user, messages, onSendMessage, loggedInUser }) {
 	}
 
 	return (
-		<div
-			style={{
-				flexGrow: "8",
-				display: "flex",
-				flexDirection: "column",
-				justifyContent: "space-between",
-			}}
-		>
+		<ChatContainer>
 			{/* <Header>{user.name}</Header> */}
 			<MessagesBox loggedInUser={loggedInUser} messages={messages} />
 			<form
@@ -55,6 +55,6 @@ export default function Chat({ user, messages, onSendMessage, loggedInUser }) {
 				/>
 				<button type="submit">Send</button>
 			</form>
-		</div>
+		</ChatContainer>
 	);
 }
