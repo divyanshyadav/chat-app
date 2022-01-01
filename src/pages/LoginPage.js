@@ -1,9 +1,10 @@
-import React, { useLayoutEffect } from "react";
+import React, { useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { GoogleLogin } from "react-google-login";
 import { useAuth } from "../utils/auth";
 import { post } from "../utils/api-client";
 import styled from "styled-components";
+import Loader from "../components/Loader";
 
 const LoginPageContainer = styled.div`
 	display: flex;
@@ -18,10 +19,23 @@ const LoginPage = () => {
 	const authUtils = useAuth();
 	const history = useHistory();
 	const location = useLocation();
+	const [isLoading, setIsLoading] = useState(false);
 
 	function redirect() {
 		let { from } = location.state || { from: { pathname: "/" } };
 		history.replace(from);
+	}
+
+	function onLoading() {
+		setIsLoading(true);
+	}
+
+	if (isLoading) {
+		return (
+			<LoginPageContainer>
+				<Loader />
+			</LoginPageContainer>
+		);
 	}
 
 	return (
@@ -32,6 +46,7 @@ const LoginPage = () => {
 					clientId={process.env.OAUTH_GOOGLE_CLIENT_ID}
 					buttonText="Log in with Google"
 					theme="dark"
+					onRequest={onLoading}
 					onSuccess={async (response) => {
 						console.log(response);
 						const user = await post(process.env.API_URL + "/users/login", {
@@ -43,6 +58,7 @@ const LoginPage = () => {
 						redirect();
 					}}
 					onFailure={(response) => {
+						setItLoading(false);
 						console.log("google login failed", response);
 					}}
 					cookiePolicy={"single_host_origin"}
