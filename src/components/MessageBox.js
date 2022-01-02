@@ -26,7 +26,7 @@ export default function MessagesBox({ loggedInUser, messages }) {
 
 const MessageContainer = styled.div`
 	display: flex;
-	justify-content: ${(isFromLoggedInUser) =>
+	justify-content: ${({ isFromLoggedInUser }) =>
 		isFromLoggedInUser ? "flex-end" : "flex-start"};
 
 	opacity: 1;
@@ -47,6 +47,7 @@ const MessageContainer = styled.div`
 
 function Message({ message, loggedInUser }) {
 	const isFromLoggedInUser = message.from === loggedInUser.id;
+	console.log(isFromLoggedInUser);
 
 	return (
 		<MessageContainer isFromLoggedInUser={isFromLoggedInUser}>
