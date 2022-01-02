@@ -24,16 +24,32 @@ export default function MessagesBox({ loggedInUser, messages }) {
 	);
 }
 
+const MessageContainer = styled.div`
+	display: flex;
+	justify-content: ${(isFromLoggedInUser) =>
+		isFromLoggedInUser ? "flex-end" : "flex-start"};
+
+	opacity: 1;
+	animation-name: fadeInOpacity;
+	animation-iteration-count: 1;
+	animation-timing-function: ease-in;
+	animation-duration: 0.1s;
+
+	@keyframes fadeInOpacity {
+		0% {
+			opacity: 0;
+		}
+		100% {
+			opacity: 1;
+		}
+	}
+`;
+
 function Message({ message, loggedInUser }) {
 	const isFromLoggedInUser = message.from === loggedInUser.id;
 
 	return (
-		<div
-			style={{
-				display: "flex",
-				justifyContent: isFromLoggedInUser ? "flex-end" : "flex-start",
-			}}
-		>
+		<MessageContainer isFromLoggedInUser={isFromLoggedInUser}>
 			<div
 				style={{
 					textAlign: isFromLoggedInUser ? "right" : "left",
@@ -73,7 +89,7 @@ function Message({ message, loggedInUser }) {
 					</div>
 				</div>
 			</div>
-		</div>
+		</MessageContainer>
 	);
 }
 
