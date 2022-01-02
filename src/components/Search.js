@@ -48,6 +48,7 @@ export default function Search({ url, onSelect }) {
 			<form onSubmit={handleSubmit}>
 				<label htmlFor="search">
 					<input
+						placeholder="Search"
 						value={value}
 						type="text"
 						name="search"
