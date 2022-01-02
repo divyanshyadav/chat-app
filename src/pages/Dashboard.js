@@ -177,7 +177,9 @@ export default function Dashboard() {
 			}
 
 			message.reachedToUser = true;
-			updateOrAddMessage(message);
+			// updateOrAddMessage(message);
+			updateMessageCounter(message);
+			addMessage(message);
 			socket.emit("message ack", message);
 		}
 
