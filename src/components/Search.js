@@ -38,16 +38,16 @@ const SearchInput = styled.input`
 	box-sizing: border-box;
 `;
 
-export default function Search({ url, onSelect }) {
+export default function Search({ onSelect, getItems }) {
 	const [value, setValue] = useState("");
 	const [items, setItems] = useState([]);
 	const [selectedIndex, setSelectedIndex] = useState(0);
 
 	const requestItems = useCallback(
-		debounce(async (url) => {
-			setItems(await get(url));
+		debounce(async (value) => {
+			setItems(await getItems(value));
 		}, 200),
-		[setItems]
+		[setItems, getItems]
 	);
 
 	function cleanup() {
@@ -65,7 +65,7 @@ export default function Search({ url, onSelect }) {
 	function handleChange(e) {
 		e.preventDefault();
 		setValue(e.target.value);
-		requestItems(url + `?search=${e.target.value}`);
+		requestItems(e.target.value);
 	}
 
 	function handleKeyDown(e) {

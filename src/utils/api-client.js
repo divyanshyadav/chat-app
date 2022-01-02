@@ -1,3 +1,5 @@
+import { deepMerge } from "./object";
+
 const commonOptions = {
 	headers: {
 		Accept: "application/json",
@@ -6,15 +8,16 @@ const commonOptions = {
 };
 
 export function get(url, options) {
-	return fetch(url, { ...commonOptions, ...options }).then((response) =>
+	return fetch(url, deepMerge(commonOptions, options)).then((response) =>
 		response.json()
 	);
 }
 
 export function post(url, options) {
-	return fetch(url, { ...commonOptions, ...options, method: "POST" }).then(
-		(response) => response.json()
-	);
+	return fetch(url, {
+		...deepMerge(commonOptions, options),
+		method: "POST",
+	}).then((response) => response.json());
 }
 
 export function debounce(fn, delay) {

@@ -243,11 +243,22 @@ export default function Dashboard() {
 		socket.connect();
 	}, [socket, user]);
 
+	const getItems = useCallback(
+		async (value) => {
+			return await get(`${process.env.API_URL}/users?search=` + value, {
+				headers: {
+					Authorization: `Bearer ${user.token}`,
+				},
+			});
+		},
+		[user.token]
+	);
+
 	return (
 		<DashboardContainer>
 			<Header user={user} onClickLogout={logout}>
 				<Search
-					url={`${process.env.API_URL}/users`}
+					getItems={getItems}
 					onSelect={(u) => {
 						console.log(u);
 						setUsers((users) => {
