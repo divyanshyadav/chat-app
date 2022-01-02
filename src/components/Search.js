@@ -13,11 +13,16 @@ export default function Search({ url, onSelect }) {
 		[setItems]
 	);
 
+	function cleanup() {
+		setItems([]);
+		setValue("");
+		setSelectedIndex(0);
+	}
+
 	function handleSubmit(e) {
 		e.preventDefault();
 		onSelect(items[selectedIndex]);
-		setValue("");
-		setItems([]);
+		cleanup();
 	}
 
 	function handleChange(e) {
@@ -67,7 +72,10 @@ export default function Search({ url, onSelect }) {
 							style={{
 								background: index === selectedIndex ? "red" : "#000",
 							}}
-							onClick={() => onSelect(i)}
+							onClick={() => {
+								onSelect(i);
+								cleanup();
+							}}
 						>
 							{i.username}
 						</div>
