@@ -1,5 +1,42 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { get, debounce } from "../utils/api-client";
+import styled from "styled-components";
+
+const SearchContainer = styled.div`
+	width: 100%;
+	margin: 0 20px;
+`;
+
+const ItemsContainer = styled.div`
+	position: relative;
+	width: 100%;
+`;
+
+const Items = styled.div`
+	position: absolute;
+	width: 100%;
+	-webkit-box-shadow: 0px 10px 13px -7px #000000,
+		5px 5px 15px 5px rgba(0, 0, 0, 0);
+	box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+`;
+
+const Item = styled.div`
+	background: ${({ selected, theme }) => (selected ? theme.light : theme.dark)};
+	height: 40px;
+	display: flex;
+	align-items: center;
+	padding: 0 10px;
+`;
+
+const SearchInput = styled.input`
+	border: none;
+	outline: none;
+	padding: 0px 10px;
+	width: 100%;
+	height: 40px;
+	font-size: 16px;
+	box-sizing: border-box;
+`;
 
 export default function Search({ url, onSelect }) {
 	const [value, setValue] = useState("");
@@ -44,45 +81,35 @@ export default function Search({ url, onSelect }) {
 	}
 
 	return (
-		<div onKeyDown={handleKeyDown}>
+		<SearchContainer onKeyDown={handleKeyDown}>
 			<form onSubmit={handleSubmit}>
-				<label htmlFor="search">
-					<input
-						placeholder="Search"
-						value={value}
-						type="text"
-						name="search"
-						autoComplete="off"
-						onChange={handleChange}
-					/>
-				</label>
+				{/* <label htmlFor="search"> */}
+				<SearchInput
+					placeholder="Search"
+					value={value}
+					type="text"
+					name="search"
+					autoComplete="off"
+					onChange={handleChange}
+				/>
+				{/* </label> */}
 			</form>
-			<div
-				style={{
-					position: "relative",
-				}}
-			>
-				<div
-					style={{
-						position: "absolute",
-					}}
-				>
+			<ItemsContainer>
+				<Items>
 					{items.map((i, index) => (
-						<div
+						<Item
 							key={i.id}
-							style={{
-								background: index === selectedIndex ? "red" : "#000",
-							}}
+							selected={index === selectedIndex}
 							onClick={() => {
 								onSelect(i);
 								cleanup();
 							}}
 						>
-							{i.username}
-						</div>
+							<div>{i.username}</div>
+						</Item>
 					))}
-				</div>
-			</div>
-		</div>
+				</Items>
+			</ItemsContainer>
+		</SearchContainer>
 	);
 }
