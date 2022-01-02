@@ -7,7 +7,6 @@ import Chat from "../components/Chat";
 import { beep } from "../utils/sound";
 import { get } from "../utils/api-client";
 import { deepMerge } from "../utils/object";
-import Loader from "../components/Loader";
 import styled from "styled-components";
 import Search from "../components/Search";
 

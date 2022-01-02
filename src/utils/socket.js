@@ -17,7 +17,9 @@ function useSocket() {
 		});
 
 		newSocket.on("connect_error", (err) => {
-			logout();
+			if (err.message === "Invalid token") {
+				logout();
+			}
 			console.error(err);
 		});
 

@@ -47,7 +47,6 @@ const MessageContainer = styled.div`
 
 function Message({ message, loggedInUser }) {
 	const isFromLoggedInUser = message.from === loggedInUser.id;
-	console.log(isFromLoggedInUser);
 
 	return (
 		<MessageContainer isFromLoggedInUser={isFromLoggedInUser}>
