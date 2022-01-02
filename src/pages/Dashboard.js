@@ -9,6 +9,7 @@ import { get } from "../utils/api-client";
 import { deepMerge } from "../utils/object";
 import Loader from "../components/Loader";
 import styled from "styled-components";
+import Search from "../components/Search";
 
 const DashboardContainer = styled.div`
 	height: 100%;
@@ -102,8 +103,6 @@ export default function Dashboard() {
 		function handleUserConnect(user) {
 			if (users.find((u) => u.id === user.id)) {
 				setUsers(users.map((u) => (u.id === user.id ? { ...u, ...user } : u)));
-			} else {
-				setUsers([...users, user]);
 			}
 		}
 
@@ -126,24 +125,8 @@ export default function Dashboard() {
 
 	useEffect(() => {
 		if (!socket) return;
-		function handleUsers(users) {
-			setUsers((oldUsers) => {
-				const updatedUsers = deepMerge(oldUsers, users);
-				return updateNewMessagesCounter(updatedUsers, conversation, user);
-			});
-		}
 
-		socket.on("users", handleUsers);
-
-		return () => {
-			socket.off("users", handleUsers);
-		};
-	}, [socket, user, conversation, users, setUsers]);
-
-	useEffect(() => {
-		if (!socket) return;
-
-		function onConversations(conversations) {
+		function onConversations({ conversations, users: newUsers }) {
 			for (const [userId, messages] of Object.entries(conversations)) {
 				messages.forEach((message) => {
 					if (message.to === user.id) {
@@ -161,7 +144,15 @@ export default function Dashboard() {
 
 			setConversation((oldConversations) => {
 				const updatedConversations = deepMerge(oldConversations, conversations);
-				setUsers(updateNewMessagesCounter(users, updatedConversations, user));
+				const updatedUsers = [...users];
+				newUsers.forEach((u) => {
+					if (!updatedUsers.find((user) => user.id === u.id)) {
+						updatedUsers.push(u);
+					}
+				});
+				setUsers(
+					updateNewMessagesCounter(updatedUsers, updatedConversations, user)
+				);
 				return updatedConversations;
 			});
 		}
@@ -233,9 +224,7 @@ export default function Dashboard() {
 			id: Math.random().toString(),
 			text,
 			to: selectedUserId,
-			toUser: users.find((u) => u.id === selectedUserId),
 			from: user.id,
-			fromUser: user,
 			reachedToServer: false,
 			reachedToUser: false,
 			seenByUser: false,
@@ -254,16 +243,27 @@ export default function Dashboard() {
 		socket.connect();
 	}, [socket, user]);
 
-	if (!users || users.length === 0)
-		return (
-			<DashboardContainer>
-				<Loader />
-			</DashboardContainer>
-		);
-
 	return (
 		<DashboardContainer>
-			<Header user={user} onClickLogout={logout} />
+			<Header user={user} onClickLogout={logout}>
+				<Search
+					url={`${process.env.API_URL}/users`}
+					onSelect={(u) => {
+						console.log(u);
+						setUsers((users) => {
+							if (users.find((user) => user.id === u.id)) {
+								return users;
+							}
+
+							return [u, ...users];
+						});
+
+						if (u.id !== user.id) {
+							setSelectedUserId(u.id);
+						}
+					}}
+				/>
+			</Header>
 			<div
 				style={{
 					display: "flex",

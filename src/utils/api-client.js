@@ -16,3 +16,11 @@ export function post(url, options) {
 		(response) => response.json()
 	);
 }
+
+export function debounce(fn, delay) {
+	let timerId;
+	return (...args) => {
+		clearTimeout(timerId);
+		timerId = setTimeout(() => fn(...args), delay);
+	};
+}

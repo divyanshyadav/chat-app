@@ -12,10 +12,11 @@ const HeaderContainer = styled.div`
 	padding: 0 10px;
 `;
 
-export default function Header({ user, onClickLogout }) {
+export default function Header({ user, onClickLogout, children }) {
 	return (
 		<HeaderContainer>
 			<div>Welcome, {user.username}</div>
+			{children}
 			<div>
 				<GoogleLogout
 					clientId={process.env.OAUTH_GOOGLE_CLIENT_ID}
