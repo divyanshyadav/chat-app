@@ -9,6 +9,7 @@ import { get } from "../utils/api-client";
 import { deepMerge } from "../utils/object";
 import styled from "styled-components";
 import Search from "../components/Search";
+import { insertionSort } from "../utils/sort";
 
 const DashboardContainer = styled.div`
 	height: 100%;
@@ -28,7 +29,10 @@ export default function Dashboard() {
 
 			setConversation((conversation) => ({
 				...conversation,
-				[userId]: [...(conversation[userId] || []), message],
+				[userId]: insertionSort(
+					[...(conversation[userId] || []), message],
+					(a, b) => a.timestamp - b.timestamp
+				),
 			}));
 		},
 		[user, setConversation]
@@ -226,9 +230,9 @@ export default function Dashboard() {
 			text,
 			to: selectedUserId,
 			from: user.id,
-			reachedToServer: false,
-			reachedToUser: false,
-			seenByUser: false,
+			// reachedToServer: false,
+			// reachedToUser: false,
+			// seenByUser: false,
 			timestamp: new Date().getTime(),
 		};
 
