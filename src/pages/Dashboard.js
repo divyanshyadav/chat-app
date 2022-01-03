@@ -10,6 +10,7 @@ import { deepMerge } from "../utils/object";
 import styled from "styled-components";
 import Search from "../components/Search";
 import { insertionSort } from "../utils/sort";
+import Loader from "../components/Loader";
 
 const DashboardContainer = styled.div`
 	height: 100%;
@@ -258,6 +259,14 @@ export default function Dashboard() {
 		},
 		[user.token]
 	);
+
+	if (!socket || !socket.connected) {
+		return (
+			<DashboardContainer>
+				<Loader />
+			</DashboardContainer>
+		);
+	}
 
 	return (
 		<DashboardContainer>
