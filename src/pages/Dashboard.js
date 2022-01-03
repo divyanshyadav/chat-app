@@ -260,14 +260,6 @@ export default function Dashboard() {
 		[user.token]
 	);
 
-	if (!socket || !socket.connected) {
-		return (
-			<DashboardContainer>
-				<Loader />
-			</DashboardContainer>
-		);
-	}
-
 	return (
 		<DashboardContainer>
 			<Header user={user} onClickLogout={logout}>
