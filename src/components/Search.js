@@ -58,6 +58,10 @@ export default function Search({ onSelect, getItems }) {
 
 	function handleSubmit(e) {
 		e.preventDefault();
+		if (items[selectedIndex] === undefined) {
+			return;
+		}
+
 		onSelect(items[selectedIndex]);
 		cleanup();
 	}
