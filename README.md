@@ -1,6 +1,9 @@
 # Chap App
 
+https://chat-app-6k1.pages.dev/
+or
 https://chat-app-for-dummies.herokuapp.com/
+
 
 ## Architecture
 
